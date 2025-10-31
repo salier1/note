@@ -55,8 +55,111 @@ export default function App() {
     event.dataTransfer.effectAllowed = 'copyMove';
   }, []);
 
+  const findHighlight = useCallback((items, id) => {
+    for (const item of items) {
+      if (item.id === id) {
+        return true;
+      }
+      if (item.children?.length && findHighlight(item.children, id)) {
+        return true;
+      }
+    }
+    return false;
+  }, []);
+
+  const addHighlightToTree = useCallback((items, highlight, targetId, dropType) => {
+    if (!targetId) {
+      return { items: [...items, highlight], inserted: true };
+    }
+
+    const addAsChild = (nodes) => {
+      let inserted = false;
+      const nextNodes = nodes.map((node) => {
+        if (node.id === targetId) {
+          inserted = true;
+          const children = Array.isArray(node.children) ? node.children : [];
+          return {
+            ...node,
+            children: [...children, highlight]
+          };
+        }
+        if (node.children?.length) {
+          const { items: childItems, inserted: childInserted } = addAsChild(node.children);
+          if (childInserted) {
+            inserted = true;
+            return {
+              ...node,
+              children: childItems
+            };
+          }
+        }
+        return node;
+      });
+      return { items: nextNodes, inserted };
+    };
+
+    const addAsSibling = (nodes) => {
+      let inserted = false;
+      const nextNodes = nodes.reduce((acc, node) => {
+        if (inserted) {
+          acc.push(node);
+          return acc;
+        }
+        if (node.id === targetId) {
+          inserted = true;
+          acc.push(node);
+          acc.push(highlight);
+          return acc;
+        }
+        if (node.children?.length) {
+          const { items: childItems, inserted: childInserted } = addAsSibling(node.children);
+          if (childInserted) {
+            inserted = true;
+            acc.push({
+              ...node,
+              children: childItems
+            });
+            return acc;
+          }
+        }
+        acc.push(node);
+        return acc;
+      }, []);
+      return { items: nextNodes, inserted };
+    };
+
+    if (dropType === 'child') {
+      return addAsChild(items);
+    }
+    return addAsSibling(items);
+  }, []);
+
+  const removeHighlightFromTree = useCallback((items, id) => {
+    let removed = false;
+    const filtered = items
+      .map((item) => {
+        if (item.id === id) {
+          removed = true;
+          return null;
+        }
+        if (item.children?.length) {
+          const { items: childItems, removed: childRemoved } = removeHighlightFromTree(item.children, id);
+          if (childRemoved) {
+            removed = true;
+            return {
+              ...item,
+              children: childItems
+            };
+          }
+        }
+        return item;
+      })
+      .filter(Boolean);
+    return { items: filtered, removed };
+  }, []);
+
   const handleDropHighlight = useCallback(
-    (event) => {
+    (event, { targetId = null, dropType = 'sibling' } = {}) => {
       event.preventDefault();
       const highlightData = event.dataTransfer.getData('application/json');
       if (!highlightData) {
@@ -65,27 +168,32 @@ export default function App() {
       try {
         const highlight = JSON.parse(highlightData);
         setOutlineItems((prev) => {
-          if (prev.some((item) => item.id === highlight.id)) {
+          if (findHighlight(prev, highlight.id)) {
             return prev;
           }
-          return [
-            ...prev,
-            {
-              ...highlight,
-              time: highlight.time ?? lastPlaybackTime
-            }
-          ];
+
+          const normalizedHighlight = {
+            ...highlight,
+            time: highlight.time ?? lastPlaybackTime,
+            children: []
+          };
+
+          const { items: updatedItems, inserted } = addHighlightToTree(prev, normalizedHighlight, targetId, dropType);
+          if (inserted) {
+            return updatedItems;
+          }
+          return [...prev, normalizedHighlight];
         });
       } catch (error) {
         console.error('无法解析拖拽数据', error);
       }
     },
-    [lastPlaybackTime]
+    [addHighlightToTree, findHighlight, lastPlaybackTime]
   );
 
   const handleRemoveOutlineItem = useCallback((id) => {
-    setOutlineItems((prev) => prev.filter((item) => item.id !== id));
-  }, []);
+    setOutlineItems((prev) => removeHighlightFromTree(prev, id).items);
+  }, [removeHighlightFromTree]);
 
   const handleExport = useCallback(
     (format) => {
@@ -94,14 +202,23 @@ export default function App() {
       }
 
       const title = config?.export?.outlineTitle ?? 'Video Notes';
-      const lines = [
-        `# ${title}`,
-        '',
-        ...(outlineItems.map(
-          (item, index) =>
-            `${index + 1}. ${item.label} (时间戳 ${Math.round(item.time)}s, 类型 ${item.category ?? 'unknown'})`
-        ) || [])
-      ];
+      const lines = [`# ${title}`, ''];
+
+      const appendLines = (items, depth = 0) => {
+        items.forEach((item, index) => {
+          const prefix = depth === 0 ? `${index + 1}.` : '-';
+          lines.push(
+            `${'  '.repeat(depth)}${prefix} ${item.label} (时间戳 ${Math.round(item.time)}s, 类型 ${
+              item.category ?? 'unknown'
+            })`
+          );
+          if (item.children?.length) {
+            appendLines(item.children, depth + 1);
+          }
+        });
+      };
+
+      appendLines(outlineItems);
       const content = lines.join('\n');
 
       if (format === 'md') {

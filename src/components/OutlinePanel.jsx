@@ -8,6 +8,69 @@ function formatTime(seconds) {
   return `${mins}:${secs}`;
 }
 
+function OutlineItem({ item, onRemove, onDropHighlight }) {
+  const [dropMode, setDropMode] = useState(null);
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const rect = event.currentTarget.getBoundingClientRect();
+    const offsetX = event.clientX - rect.left;
+    const mode = offsetX > rect.width * 0.6 ? 'child' : 'sibling';
+    setDropMode(mode);
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'copy';
+    }
+  };
+
+  const handleDragLeave = (event) => {
+    event.stopPropagation();
+    setDropMode(null);
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    onDropHighlight(event, { targetId: item.id, dropType: dropMode ?? 'sibling' });
+    setDropMode(null);
+  };
+
+  return (
+    <li className={`outline-item${dropMode ? ` outline-item--${dropMode}` : ''}`}>
+      <div
+        className="outline-item-card"
+        onDragEnter={handleDragOver}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        <div>
+          <strong>{item.label}</strong>
+          <div className="timestamp">{formatTime(item.time)} · {item.category}</div>
+        </div>
+        <div className="outline-actions">
+          <button type="button" onClick={() => onRemove(item.id)}>
+            移除
+          </button>
+        </div>
+      </div>
+
+      {item.children?.length ? (
+        <ul className="outline-sublist">
+          {item.children.map((child) => (
+            <OutlineItem
+              key={child.id}
+              item={child}
+              onRemove={onRemove}
+              onDropHighlight={onDropHighlight}
+            />
+          ))}
+        </ul>
+      ) : null}
+    </li>
+  );
+}
+
 export default function OutlinePanel({ outlineItems, onRemove, onDropHighlight, onExport }) {
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -15,9 +78,20 @@ export default function OutlinePanel({ outlineItems, onRemove, onDropHighlight, 
     if (!outlineItems.length) {
       return '_拖拽提示节点至此生成大纲_';
     }
-    return outlineItems
-      .map((item, index) => `${index + 1}. ${item.label} _(at ${formatTime(item.time)})_`)
-      .join('\n');
+
+    const lines = [];
+    const buildLines = (items, depth = 0) => {
+      items.forEach((item, index) => {
+        const prefix = depth === 0 ? `${index + 1}.` : '-';
+        lines.push(`${'  '.repeat(depth)}${prefix} ${item.label} _(at ${formatTime(item.time)})_`);
+        if (item.children?.length) {
+          buildLines(item.children, depth + 1);
+        }
+      });
+    };
+
+    buildLines(outlineItems);
+    return lines.join('\n');
   }, [outlineItems]);
 
   return (
@@ -38,7 +112,7 @@ export default function OutlinePanel({ outlineItems, onRemove, onDropHighlight, 
         onDragLeave={() => setIsDragOver(false)}
         onDrop={(event) => {
           setIsDragOver(false);
-          onDropHighlight(event);
+          onDropHighlight(event, { targetId: null, dropType: 'sibling' });
         }}
       >
         将视频中的亮点拖入此处以构建大纲
@@ -46,17 +120,7 @@ export default function OutlinePanel({ outlineItems, onRemove, onDropHighlight, 
 
       <ul className="outline-list">
         {outlineItems.map((item) => (
-          <li key={item.id} className="outline-item">
-            <div>
-              <strong>{item.label}</strong>
-              <div className="timestamp">{formatTime(item.time)} · {item.category}</div>
-            </div>
-            <div className="outline-actions">
-              <button type="button" onClick={() => onRemove(item.id)}>
-                移除
-              </button>
-            </div>
-          </li>
+          <OutlineItem key={item.id} item={item} onRemove={onRemove} onDropHighlight={onDropHighlight} />
         ))}
         {outlineItems.length === 0 ? (
           <li style={{ color: '#5f6c8d', fontSize: '0.85rem' }}>暂无大纲内容</li>
