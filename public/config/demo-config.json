@@ -13,31 +13,39 @@
       "highlights": [
         {
           "id": "highlight-intro",
+          "title": "课程目标速览",
           "label": "课程目标",
           "time": 3,
           "shape": "circle",
-          "category": "summary"
+          "category": "summary",
+          "note": "通过示例展示课程学习完成后能够掌握的 LLM 记笔记能力，帮助学习者建立整体学习动机。"
         },
         {
           "id": "highlight-benefit",
+          "title": "LLM 带来的优势",
           "label": "LLM 优势",
           "time": 8,
           "shape": "diamond",
-          "category": "insight"
+          "category": "insight",
+          "note": "对比传统人工笔记方式，总结 AI 在速度、准确率以及多模态理解方面的关键优势。"
         },
         {
           "id": "highlight-steps",
+          "title": "操作流程拆解",
           "label": "操作流程",
           "time": 14,
           "shape": "rectangle",
-          "category": "action"
+          "category": "action",
+          "note": "列出 3 个实践步骤：准备素材、选择提示、整理输出，强调每一步需要注意的细节。"
         },
         {
           "id": "highlight-prompt",
+          "title": "提示工程建议",
           "label": "提示工程",
           "time": 20,
           "shape": "circle",
-          "category": "question"
+          "category": "question",
+          "note": "提供 2-3 个高质量提示语模板，并说明如何针对不同场景调整参数。"
         }
       ]
     },
@@ -50,24 +58,30 @@
       "highlights": [
         {
           "id": "highlight-scenario",
+          "title": "典型学习场景",
           "label": "学习场景",
           "time": 5,
           "shape": "diamond",
-          "category": "summary"
+          "category": "summary",
+          "note": "描述企业培训、学术研究、日常学习等场景下，如何运用 LLM 提升笔记体验。"
         },
         {
           "id": "highlight-compare",
+          "title": "与手写笔记对比",
           "label": "与手写对比",
           "time": 16,
           "shape": "circle",
-          "category": "insight"
+          "category": "insight",
+          "note": "分别从效率、结构化程度、可检索性三方面进行对比，说明 AI 的价值。"
         },
         {
           "id": "highlight-interaction",
+          "title": "交互设计要点",
           "label": "交互设计",
           "time": 26,
           "shape": "rectangle",
-          "category": "action"
+          "category": "action",
+          "note": "总结界面布局、拖拽反馈、辅助提示等交互优化点，为后续复盘提供参考。"
         }
       ]
     }

@@ -102,18 +102,41 @@ export default function VideoWorkspace({
             Highlights will appear automatically as the video progresses.
           </p>
         ) : (
-          availableHighlights.map((highlight) => (
-            <div
-              key={highlight.id}
-              className="highlight-token"
-              style={{ background: COLOR_MAP[highlight.category] ?? '#4C5D8B' }}
-              data-shape={highlight.shape}
-              draggable
-              onDragStart={(event) => onHighlightDragStart(event, highlight)}
-            >
-              <span style={{ pointerEvents: 'none' }}>{highlight.label}</span>
-            </div>
-          ))
+          availableHighlights.map((highlight) => {
+            const color = COLOR_MAP[highlight.category] ?? '#4C5D8B';
+            return (
+              <div
+                key={highlight.id}
+                className={`highlight-token${highlight.shape ? ` highlight-token--${highlight.shape}` : ''}`}
+                style={{ '--highlight-color': color }}
+                data-shape={highlight.shape}
+                draggable
+                onDragStart={(event) => {
+                  event.currentTarget.classList.add('is-dragging');
+                  onHighlightDragStart(event, highlight);
+                }}
+                onDragEnd={(event) => {
+                  event.currentTarget.classList.remove('is-dragging');
+                }}
+              >
+                <div className="highlight-token__shape">
+                  <span className="highlight-token__label">{highlight.title ?? highlight.label}</span>
+                </div>
+                <div className="highlight-token__meta">
+                  <span>{formatTime(highlight.time)}</span>
+                  <span>{highlight.category}</span>
+                </div>
+                {highlight.note ? (
+                  <div className="highlight-token__tooltip" role="tooltip">
+                    <div className="highlight-token__tooltip-title">
+                      {highlight.title ?? highlight.label}
+                    </div>
+                    <p>{highlight.note}</p>
+                  </div>
+                ) : null}
+              </div>
+            );
+          })
         )}
       </div>
     </div>
