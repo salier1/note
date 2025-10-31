@@ -44,7 +44,7 @@ function OutlineItem({ item, onRemove, onDropHighlight }) {
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <div className={`outline-drop-label${dropMode ? ' outline-drop-label--visible' : ''}`}>
+        <div className={`outline-drop-hint${dropMode ? ' outline-drop-hint--visible' : ''}`}>
           {dropMode === 'child' ? '松开以添加为子项' : '松开以添加到同级'}
         </div>
         <div>
