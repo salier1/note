@@ -1,0 +1,75 @@
+{
+  "videoDirectory": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos",
+  "export": {
+    "outlineTitle": "示例课程 - AI智能大纲"
+  },
+  "videos": [
+    {
+      "id": "sample-intro",
+      "title": "LLM for Note-taking Basics",
+      "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+      "poster": "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=900&q=80",
+      "duration": 30,
+      "highlights": [
+        {
+          "id": "highlight-intro",
+          "label": "课程目标",
+          "time": 3,
+          "shape": "circle",
+          "category": "summary"
+        },
+        {
+          "id": "highlight-benefit",
+          "label": "LLM 优势",
+          "time": 8,
+          "shape": "diamond",
+          "category": "insight"
+        },
+        {
+          "id": "highlight-steps",
+          "label": "操作流程",
+          "time": 14,
+          "shape": "rectangle",
+          "category": "action"
+        },
+        {
+          "id": "highlight-prompt",
+          "label": "提示工程",
+          "time": 20,
+          "shape": "circle",
+          "category": "question"
+        }
+      ]
+    },
+    {
+      "id": "deep-dive",
+      "title": "Prompting Deep Dive",
+      "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+      "poster": "https://images.unsplash.com/photo-1509223197845-458d87318791?auto=format&fit=crop&w=900&q=80",
+      "duration": 45,
+      "highlights": [
+        {
+          "id": "highlight-scenario",
+          "label": "学习场景",
+          "time": 5,
+          "shape": "diamond",
+          "category": "summary"
+        },
+        {
+          "id": "highlight-compare",
+          "label": "与手写对比",
+          "time": 16,
+          "shape": "circle",
+          "category": "insight"
+        },
+        {
+          "id": "highlight-interaction",
+          "label": "交互设计",
+          "time": 26,
+          "shape": "rectangle",
+          "category": "action"
+        }
+      ]
+    }
+  ]
+}
