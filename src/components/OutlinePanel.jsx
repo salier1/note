@@ -16,7 +16,7 @@ function OutlineItem({ item, onRemove, onDropHighlight }) {
     event.stopPropagation();
     const rect = event.currentTarget.getBoundingClientRect();
     const offsetX = event.clientX - rect.left;
-    const mode = offsetX > rect.width * 0.6 ? 'child' : 'sibling';
+    const mode = offsetX > rect.width * 0.5 ? 'child' : 'sibling';
     setDropMode(mode);
     if (event.dataTransfer) {
       event.dataTransfer.dropEffect = 'copy';
@@ -44,6 +44,9 @@ function OutlineItem({ item, onRemove, onDropHighlight }) {
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
+        <div className={`outline-drop-label${dropMode ? ' outline-drop-label--visible' : ''}`}>
+          {dropMode === 'child' ? '松开以添加为子项' : '松开以添加到同级'}
+        </div>
         <div>
           <strong>{item.label}</strong>
           <div className="timestamp">{formatTime(item.time)} · {item.category}</div>
@@ -97,11 +100,7 @@ export default function OutlinePanel({ outlineItems, onRemove, onDropHighlight, 
   return (
     <div className="outline-container">
       <div
-        className="drop-zone"
-        style={{
-          borderColor: isDragOver ? '#1C89FF' : undefined,
-          background: isDragOver ? 'rgba(28, 137, 255, 0.12)' : undefined
-        }}
+        className={`drop-zone${isDragOver ? ' drop-zone--active' : ''}`}
         onDragEnter={(event) => {
           event.preventDefault();
           setIsDragOver(true);
@@ -109,13 +108,28 @@ export default function OutlinePanel({ outlineItems, onRemove, onDropHighlight, 
         onDragOver={(event) => {
           event.preventDefault();
         }}
-        onDragLeave={() => setIsDragOver(false)}
+        onDragLeave={(event) => {
+          const nextTarget = event.relatedTarget;
+          if (!nextTarget || !event.currentTarget.contains(nextTarget)) {
+            setIsDragOver(false);
+          }
+        }}
         onDrop={(event) => {
           setIsDragOver(false);
           onDropHighlight(event, { targetId: null, dropType: 'sibling' });
         }}
       >
-        将视频中的亮点拖入此处以构建大纲
+        <span className="drop-zone__text">将视频中的亮点拖入此处以构建大纲</span>
+        {isDragOver ? (
+          <div className="drop-zone__overlay">
+            <div className="drop-zone__overlay-content">
+              <span className="drop-zone__overlay-icon" aria-hidden="true">
+                📌
+              </span>
+              松开以添加到大纲
+            </div>
+          </div>
+        ) : null}
       </div>
 
       <ul className="outline-list">
