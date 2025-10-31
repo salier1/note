@@ -1,5 +1,5 @@
 {
-  "videoDirectory": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos",
+  "videoDirectory": "/video",
   "export": {
     "outlineTitle": "示例课程 - AI智能大纲"
   },
@@ -7,7 +7,7 @@
     {
       "id": "sample-intro",
       "title": "LLM for Note-taking Basics",
-      "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+      "src": "/video.mp4",
       "poster": "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=900&q=80",
       "duration": 30,
       "highlights": [
@@ -44,7 +44,7 @@
     {
       "id": "deep-dive",
       "title": "Prompting Deep Dive",
-      "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+      "src": "/video.mp4",
       "poster": "https://images.unsplash.com/photo-1509223197845-458d87318791?auto=format&fit=crop&w=900&q=80",
       "duration": 45,
       "highlights": [
