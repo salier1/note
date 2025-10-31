@@ -192,6 +192,12 @@ button {
 }
 
 .outline-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.outline-item-card {
   padding: 0.75rem 1rem;
   border-radius: 12px;
   background: white;
@@ -200,11 +206,33 @@ button {
   justify-content: space-between;
   align-items: center;
   gap: 0.75rem;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.outline-item--sibling > .outline-item-card {
+  border-color: rgba(28, 137, 255, 0.35);
+  box-shadow: 0 12px 26px rgba(28, 137, 255, 0.18);
+}
+
+.outline-item--child > .outline-item-card {
+  border-color: rgba(22, 163, 74, 0.4);
+  box-shadow: 0 12px 26px rgba(22, 163, 74, 0.18);
+  background: rgba(22, 163, 74, 0.08);
 }
 
 .outline-item .timestamp {
   font-size: 0.75rem;
   color: #5f6c8d;
+}
+
+.outline-sublist {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .outline-actions {
