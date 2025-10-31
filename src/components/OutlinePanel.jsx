@@ -16,7 +16,7 @@ function OutlineItem({ item, onRemove, onDropHighlight }) {
     event.stopPropagation();
     const rect = event.currentTarget.getBoundingClientRect();
     const offsetX = event.clientX - rect.left;
-    const mode = offsetX > rect.width * 0.6 ? 'child' : 'sibling';
+    const mode = offsetX > rect.width * 0.5 ? 'child' : 'sibling';
     setDropMode(mode);
     if (event.dataTransfer) {
       event.dataTransfer.dropEffect = 'copy';
